@@ -54,19 +54,17 @@ public class HDUtil {
             // 保存种子节点到确定性钱包中
             // seed：通过助记词和密码生成
             DeterministicSeed deterministicSeed = new DeterministicSeed(word, null, passphrase, 0L);
-            // 通过种子信息生成确定性钥匙链
+            // 通过根种子信息生成主链码
             DeterministicKeyChain deterministicKeyChain = DeterministicKeyChain.builder().seed(deterministicSeed).build();
-            // 通过路径获得相对应的钥匙
+            // 通过根种子生成主密钥
             DeterministicKey main = deterministicKeyChain.getKeyByPath(HDUtils.parsePath(walletPath), true);
             DeterministicHierarchy tree = new DeterministicHierarchy(main);
             DeterministicKey rootKey = tree.getRootKey();
-            System.out.println("root key : " + rootKey.toString());
             log.info("BTY childs privateKey,public,address start");
             for (int i = childNum[0], len = childNum[1]; i < len; i++) {
+                // 父密钥（没有压缩过的椭圆曲线推导出来的私钥），链码（rootKey）作为熵，子代索引序号 -> 通过HMAC-SHA512 (HDKeyDerivation.deriveChildKeyBytesFromPublic)生成子公私钥地址
                 DeterministicKey deriveChildKey = HDKeyDerivation.deriveChildKey(rootKey, new ChildNumber(i));
-                System.out.println("path : " + deriveChildKey.getPath());
                 String path = deriveChildKey.getPathAsString();
-                System.out.println("path as string : " + deriveChildKey.getPathAsString());
                 String priKey = deriveChildKey.getPrivateKeyAsHex();
                 String pubKey = deriveChildKey.getPublicKeyAsHex();
                 String address = ECKey.fromPrivate(deriveChildKey.getPrivKey()).toAddress(PARAMS).toBase58();

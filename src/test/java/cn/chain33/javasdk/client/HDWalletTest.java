@@ -19,6 +19,7 @@ public class HDWalletTest {
         List<HDWallet> hdWallets = HDUtil.createHDWalletByPath("/0/1H", mnemonic, "hbj123456", a);
         for (HDWallet hdWallet : hdWallets) {
             System.out.println("=========================");
+            System.out.println("path    : " + hdWallet.getPath());
             System.out.println("address : " + hdWallet.getAddress());
             System.out.println("pubKey  : " + hdWallet.getPubKey());
             System.out.println("priKey  : " + hdWallet.getPriKey());
